@@ -107,5 +107,3 @@ with midiout:
 
 
             time.sleep(0.01)
-
-del midiout
