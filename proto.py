@@ -7,12 +7,14 @@ max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 
 debug_logging = True
 # Constants
-temp = .1
+tempo = .01
 button_to_key = {
-        'Boop': 60,
+        'Boop': 58,
         'C': 60,
         'D': 62,
         'E': 64,
+        'F': 66,
+        'G': 68,
         }
 
 # This queue stores every teleop command received from the formant client
@@ -35,10 +37,14 @@ class Pitch():
         self.msb = msb 
         self.lsb = lsb 
 
+    @property
+    def channel(self):
+        return 0x91
+
 class Note():
-    def __init__(self, key: int, tempo: float = temp):
-        assert_midi_val('key', note_val)
-        self.key = note_val
+    def __init__(self, key: int, tempo: float = tempo):
+        assert_midi_val('key', key)
+        self.key = key
         self.tempo = tempo
     
     @property
@@ -61,10 +67,10 @@ def teleop_callback(datapoint):
     if datapoint.stream == "Stick":
         print_dbg(datapoint.twist.linear)
         joy_y = datapoint.twist.linear.y
-        msb = 63 + (joy_y * 63) # Ranges from 0 - 126
+        msb = int(63 + (joy_y * 63)) # Ranges from 0 - 126
 
         joy_z = datapoint.twist.linear.z
-        lsb = 63 + (joy_z * 63) # Ranges from 0 - 126
+        lsb = int(63 + (joy_z * 63)) # Ranges from 0 - 126
 
         command_queue.append(Pitch(lsb, msb))
     print_dbg("point received")
@@ -76,7 +82,7 @@ midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
 
 # TODO(etragas) Generalize to other synths besides Arturia
-arturia_port = [x for x in available_ports if 'Arturia' in x]
+arturia_port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
 assert(len(arturia_port) == 1)
 arturia_port = arturia_port[0]
 port_int = available_ports.index(arturia_port)
@@ -102,8 +108,11 @@ with midiout:
                 midiout.send_message(note_off)
             elif isinstance(note, Pitch):
                 msb, lsb = note.msb, note.lsb
-                pitch_set= [0xE0, lsb, msb] # channel 1, middle C, velocity 112
+                pitch_set= [note.channel, msb, lsb] # channel 1, middle C, velocity 112
                 midiout.send_message(pitch_set)
+                time.sleep(tempo)
+                note_off = [note.channel, msb, 0]
+                midiout.send_message(note_off)
 
 
             time.sleep(0.01)
