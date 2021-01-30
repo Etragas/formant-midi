@@ -14,7 +14,6 @@ max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 debug_logging = True
 message_polling_rate = .01 # How often we check for a message from formant api
 
-rhcp = ['E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'D', 'D', 'D', 'D', 'E', 'D', 'D', 'D', 'D'] * 4
 # This queue stores every teleop command received from the formant client
 # Each time a command is received, it is pushed on to the command queue
 # The midi control loop will then consume these commands and send them to the synth
@@ -54,7 +53,9 @@ def message_from_joystick_spec(spec: JoystickSpec) -> MidiMessage:
 
     return MidiMessage(channel=spec.channel, note=note, velocity=velocity)
 
-message_queue = [message_from_button_spec(BUTTON_LOOKUP.get(note)) for note in rhcp]
+message_queue = []
+# rhcp = ['E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'D', 'D', 'D', 'D', 'E', 'D', 'D', 'D', 'D'] * 4
+# message_queue.extend([message_from_button_spec(BUTTON_LOOKUP.get(note)) for note in rhcp])
 
 def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) typehint formant dp
     # Get the spec for the datapoint
