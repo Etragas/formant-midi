@@ -4,7 +4,8 @@ import time
 import rtmidi
 import mido
 from formant.sdk.agent.v1 import Client as FC
-from formant_spec import BUTTON_LOOKUP, JOYSTICK_LOOKUP, ButtonSpec, JoystickSpec
+from formant_spec import  ButtonSpec, JoystickSpec
+from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP
 
 # Constants
 max_channel_val = 0x90# Chanenls range from 0-15
