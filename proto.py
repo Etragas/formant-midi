@@ -70,7 +70,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
                 print_dbg(datapoint)
                 return []
             messages.append(message_from_button_spec(spec))
-    if datapoint.stream == "Stick":
+    elif datapoint.stream == "Stick":
         stick_name = datapoint.stream
         spec = STICK_LOOKUP.get(stick_name)
         if spec is None:
@@ -78,6 +78,9 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
             print_dbg(datapoint)
             return []
         messages.append(message_from_joystick_spec(spec))
+    else: 
+        print_dbg('Unknown stream for datapoint:')
+        print_dbg(datapoint)
     return messages
 
 def teleop_callback(datapoint):
