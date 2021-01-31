@@ -76,7 +76,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
         messages.append(message_from_joystick_spec(spec))
 
 def teleop_callback(datapoint):
-    messages = midi_message_from_formant(datapoint)
+    messages = midi_messages_from_formant(datapoint)
     message_queue.extend(message)
     print_dbg("point received")
 
