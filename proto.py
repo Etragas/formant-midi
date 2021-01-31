@@ -67,18 +67,18 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
         for bit in datapoint.bitset.bits:
             spec = BUTTON_LOOKUP.get(bit.key)
             if spec is None:
-                print_dbg('No spec for datapoint:')
+                print_dbg('No spec for datapoint')
                 return []
             messages.append(message_from_button_spec(spec))
     elif datapoint.stream == JOYSTICK_STREAM_NAMES:
         stick_name = datapoint.stream
-        spec = STICK_LOOKUP.get(stick_name)
+        spec = JOYSTICK_LOOKUP.get(stick_name)
         if spec is None:
-            print_dbg('No spec for datapoint:')
+            print_dbg('No spec for datapoint')
             return []
         messages.append(message_from_joystick_spec(spec))
     else: 
-        print_dbg('Unknown stream for datapoint:')
+        print_dbg('Unknown stream for datapoint')
     return messages
 
 def teleop_callback(datapoint):
