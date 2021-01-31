@@ -42,7 +42,7 @@ class MidiMessage():
 def message_from_button_spec(spec: ButtonSpec) -> MidiMessage:
     return MidiMessage(spec.channel, spec.note, spec.velocity)
 
-def message_from_joystick_spec(spec: JoystickSpec) -> MidiMessage:
+def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
     # TODO(etragas) What are the stick names?
     print_dbg(datapoint.twist.linear)
     joy_z = datapoint.twist.linear.z
@@ -77,7 +77,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
         if spec is None:
             print_dbg('No spec for datapoint')
             return []
-        messages.append(message_from_joystick_spec(spec))
+        messages.append(message_from_joystick_spec(spec, datapoint))
     else: 
         print_dbg('Unknown stream for datapoint')
     return messages
