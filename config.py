@@ -15,6 +15,7 @@ JOYSTICK_SPEC = [
     JoystickSpec(name='Stick', channel = 1)
 ]
 
+STREAM_NAMES = ['Buttons', 'joystick_a']
 
 BUTTON_LOOKUP = {v.name: v for v in BUTTON_SPEC}
 JOYSTICK_LOOKUP = {v.name: v for v in JOYSTICK_SPEC}

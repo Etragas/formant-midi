@@ -5,7 +5,7 @@ import rtmidi
 import mido
 from formant.sdk.agent.v1 import Client as FC
 from formant_spec import  ButtonSpec, JoystickSpec
-from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP
+from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, STREAM_NAMES
 
 # Constants
 max_channel_val = 0x90# Chanenls range from 0-15
@@ -86,7 +86,7 @@ def teleop_callback(datapoint):
     message_queue.extend(messages)
 
 fc_client = FC()
-fc_client.register_teleop_callback(teleop_callback, ["Buttons", "Stick"])
+fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
