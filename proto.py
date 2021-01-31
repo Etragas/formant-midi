@@ -74,6 +74,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
         if spec is None:
             return []
         messages.append(message_from_joystick_spec(spec))
+    return messages
 
 def teleop_callback(datapoint):
     messages = midi_messages_from_formant(datapoint)
