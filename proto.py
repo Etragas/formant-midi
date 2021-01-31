@@ -70,7 +70,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
                 print_dbg('No spec for datapoint')
                 return []
             messages.append(message_from_button_spec(spec))
-    elif datapoint.stream == JOYSTICK_STREAM_NAMES:
+    elif datapoint.stream in JOYSTICK_STREAM_NAMES:
         stick_name = datapoint.stream
         print_dbg(f' Looking up stick w name: {stick_name}')
         spec = JOYSTICK_LOOKUP.get(stick_name)
@@ -90,7 +90,7 @@ print_dbg('Listening to the following streams')
 print_dbg(STREAM_NAMES)
 
 fc_client = FC()
-fc_client.register_teleop_callback(teleop_callback, ["Buttons", "joystick_a"])
+fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
