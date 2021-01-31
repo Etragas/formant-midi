@@ -45,11 +45,11 @@ def message_from_button_spec(spec: ButtonSpec) -> MidiMessage:
 def message_from_joystick_spec(spec: JoystickSpec) -> MidiMessage:
     # TODO(etragas) What are the stick names?
     print_dbg(datapoint.twist.linear)
-    joy_y = datapoint.twist.linear.y
-    velocity= int(63 + (joy_y * 63)) # Ranges from 0 - 126
-
     joy_z = datapoint.twist.linear.z
     note = int(63 + (joy_z * 63)) # Ranges from 0 - 126
+
+    joy_y = datapoint.twist.linear.y
+    velocity= int(63 + (joy_y * 63)) # Ranges from 0 - 126
 
     return MidiMessage(channel=spec.channel, note=note, velocity=velocity)
 
@@ -61,6 +61,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
     # Get the spec for the datapoint
     # Use the spec to make a message and return it
     messages = []
+    print_dbg('Parsing datapoint', datapoint)
     if datapoint.stream == "Buttons":
         print_dbg(datapoint)
         for bit in datapoint.bitset.bits:
@@ -86,7 +87,6 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
 def teleop_callback(datapoint):
     messages = midi_messages_from_formant(datapoint)
     message_queue.extend(messages)
-    print_dbg("point received")
 
 fc_client = FC()
 fc_client.register_teleop_callback(teleop_callback, ["Buttons", "Stick"])
