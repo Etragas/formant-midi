@@ -86,6 +86,9 @@ def teleop_callback(datapoint):
     messages = midi_messages_from_formant(datapoint)
     message_queue.extend(messages)
 
+print_dbg('Listening to the following streams')
+print_dbg(STREAM_NAMES)
+
 fc_client = FC()
 fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
