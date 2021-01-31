@@ -77,7 +77,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
 
 def teleop_callback(datapoint):
     messages = midi_messages_from_formant(datapoint)
-    message_queue.extend(message)
+    message_queue.extend(messages)
     print_dbg("point received")
 
 fc_client = FC()
