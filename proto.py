@@ -90,7 +90,7 @@ print_dbg('Listening to the following streams')
 print_dbg(STREAM_NAMES)
 
 fc_client = FC()
-fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
+fc_client.register_teleop_callback(teleop_callback, ["Buttons", "joystick_a"])
 
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
