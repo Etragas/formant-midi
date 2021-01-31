@@ -5,7 +5,7 @@ import rtmidi
 import mido
 from formant.sdk.agent.v1 import Client as FC
 from formant_spec import  ButtonSpec, JoystickSpec
-from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, STREAM_NAMES
+from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES
 
 # Constants
 max_channel_val = 0x90# Chanenls range from 0-15
@@ -63,14 +63,14 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
     messages = []
     print_dbg('--- Parsing datapoint ---')
     print_dbg(datapoint)
-    if datapoint.stream == "Buttons":
+    if datapoint.stream in BUTTON_STREAM_NAMES:
         for bit in datapoint.bitset.bits:
             spec = BUTTON_LOOKUP.get(bit.key)
             if spec is None:
                 print_dbg('No spec for datapoint:')
                 return []
             messages.append(message_from_button_spec(spec))
-    elif datapoint.stream == "Stick":
+    elif datapoint.stream == JOYSTICK_STREAM_NAMES:
         stick_name = datapoint.stream
         spec = STICK_LOOKUP.get(stick_name)
         if spec is None:

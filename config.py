@@ -12,10 +12,12 @@ BUTTON_SPEC = [
 
 # Example stick that sends notes when moved left-right and velocities when moved up/down
 JOYSTICK_SPEC = [
-    JoystickSpec(name='Stick', channel = 1)
+    JoystickSpec(name='joystick_a', channel = 1)
 ]
 
-STREAM_NAMES = ['Buttons', 'joystick_a']
+BUTTON_STREAM_NAMES = ['Buttons']
+JOYSTICK_STREAM_NAMES = ['joystick_a']
 
 BUTTON_LOOKUP = {v.name: v for v in BUTTON_SPEC}
 JOYSTICK_LOOKUP = {v.name: v for v in JOYSTICK_SPEC}
+STREAM_NAMES = BUTTON_STREAM_NAMES + JOYSTICK_STREAM_NAMES
