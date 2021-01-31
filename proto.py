@@ -72,6 +72,7 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
             messages.append(message_from_button_spec(spec))
     elif datapoint.stream == JOYSTICK_STREAM_NAMES:
         stick_name = datapoint.stream
+        print_dbg(f' Looking up stick w name: {stick_name}')
         spec = JOYSTICK_LOOKUP.get(stick_name)
         if spec is None:
             print_dbg('No spec for datapoint')
