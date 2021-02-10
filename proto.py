@@ -127,6 +127,7 @@ port_int = available_ports.index(arturia_port)
 midiout.open_port(port_int)
 print_dbg(midiout)
 
+#TODO(etragas) Start stop reset clock
 with midiout:
     # Set all note volumes to 0
     for key_val in range(128):
