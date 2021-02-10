@@ -139,10 +139,11 @@ with midiout:
             print_dbg(note_on)
             midiout.send_message(note_on)
             time.sleep(message.tempo)
-            note_off = [message.channel, 0, 0]
+            note_off = [message.channel, message.note, 0]
             midiout.send_message(note_off)
             time.sleep(message_polling_rate)
 
-        for key_val in range(128):
-            off = [144, key_val, 0]
-            midiout.send_message(off)
+    for key_val in range(128):
+        off = [144, key_val, 0]
+        midiout.send_message(off)
+

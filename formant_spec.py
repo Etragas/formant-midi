@@ -16,7 +16,7 @@ class ButtonSpec():
     """
     def __init__(self, name: str, channel: int, note: int, velocity: int):
         self.name = name
-        self.channel = 0x90 + channel
+        self.channel = 0x90 + channel - 1
         self.note = note
         self.velocity = velocity
 
@@ -31,7 +31,7 @@ class JoystickSpec():
     """
     def __init__(self, name: str, channel: int):
         self.name = name
-        self.channel = 0x90 + channel
+        self.channel = 0x90 + channel - 1
 
 class NumericSpec():
     """ Defines a mapping between a formant numeric stream and midi output
@@ -44,4 +44,4 @@ class NumericSpec():
     """
     def __init__(self, name: str, channel: int):
         self.name = name
-        self.channel = 0x90 + channel
+        self.channel = 0x90 + channel - 1

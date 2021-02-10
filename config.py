@@ -1,24 +1,24 @@
 from formant_spec import ButtonSpec, JoystickSpec, NumericSpec
 
 BUTTON_SPEC = [
-    ButtonSpec(name='A', channel=0, note=57, velocity=127),
-    ButtonSpec(name='B', channel=0, note=59, velocity=127),
-    ButtonSpec(name='C', channel=0, note=60, velocity=127),
-    ButtonSpec(name='D', channel=4, note=62, velocity=127),
-    ButtonSpec(name='E', channel=0, note=64, velocity=127),
-    ButtonSpec(name='F', channel=0, note=65, velocity=127),
-    ButtonSpec(name='G', channel=0, note=67, velocity=127),
+    ButtonSpec(name='A', channel=1, note=57, velocity=127),
+    ButtonSpec(name='B', channel=1, note=59, velocity=127),
+    ButtonSpec(name='C', channel=1, note=60, velocity=127),
+    ButtonSpec(name='D', channel=1, note=62, velocity=127),
+    ButtonSpec(name='E', channel=1, note=64, velocity=127),
+    ButtonSpec(name='F', channel=1, note=65, velocity=127),
+    ButtonSpec(name='G', channel=1, note=67, velocity=127),
 ]
 
 # Example stick that sends notes when moved left-right and velocities when moved up/down
 JOYSTICK_SPEC = [
-    JoystickSpec(name='joystick_a', channel = 1)
+    JoystickSpec(name='joystick_a', channel = 2)
 ]
 
 
 NUMERIC_SPEC = [
-    NumericSpec(name='echo', channel = 2),
-    NumericSpec(name='filter', channel = 3)
+    NumericSpec(name='echo', channel = 3),
+    NumericSpec(name='filter', channel = 4)
 ]
 
 BUTTON_STREAM_NAMES = ['Buttons']
