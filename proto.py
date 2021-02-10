@@ -29,7 +29,7 @@ def assert_midi_val(name: str, val: int) -> None:
     assert (val <= max_midi_val), (f'{name} with value {val} exceeds max_midi_val of {max_midi_val}')
 
 class MidiMessage():
-    def __init__(self, channel: int, note: int, velocity: int, tempo: float = 0.1):
+    def __init__(self, channel: int, note: int, velocity: int, tempo: float = 0.01):
         assert_midi_channel('channel', channel)
         assert_midi_val('note', note)
         assert_midi_val('velocity', velocity)
@@ -45,17 +45,18 @@ def message_from_button_spec(spec: ButtonSpec) -> MidiMessage:
 def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
     # TODO(etragas) What are the stick names?
     print_dbg(datapoint.twist.linear)
-    joy_z = datapoint.twist.linear.z
-    note = int(63 + (joy_z * 63)) # Ranges from 0 - 126
+    joy_z = datapoint.twist.linear.x
+    velocity = int(63 + (joy_z * 63)) # Ranges from 0 - 126
 
-    joy_y = datapoint.twist.linear.y
-    velocity= int(63 + (joy_y * 63)) # Ranges from 0 - 126
+    joy_y = datapoint.twist.angular.z
+    note = int(63 + (joy_y * 63)) # Ranges from 0 - 126
 
     return MidiMessage(channel=spec.channel, note=note, velocity=velocity)
 
 def message_from_numeric_spec(spec: NumericSpec, datapoint) -> MidiMessage:
     value = 0
 
+    print(datapoint)
     # hey, mike here.
     # this value should hopefully appear when the agent is updated to 1.21
     try:
