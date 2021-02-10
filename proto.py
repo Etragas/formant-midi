@@ -4,8 +4,8 @@ import time
 import rtmidi
 import mido
 from formant.sdk.agent.v1 import Client as FC
-from formant_spec import  ButtonSpec, JoystickSpec
-from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES
+from formant_spec import  ButtonSpec, JoystickSpec, NumericSpec
+from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 
 # Constants
 max_channel_val = 0x90# Chanenls range from 0-15
@@ -53,6 +53,21 @@ def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
 
     return MidiMessage(channel=spec.channel, note=note, velocity=velocity)
 
+def message_from_numeric_spec(spec: NumericSpec, datapoint) -> MidiMessage:
+    value = 0
+
+    # hey, mike here.
+    # this value should hopefully appear when the agent is updated to 1.21
+    try:
+        value = datapoint.numeric.value
+    except:
+        print_dbg('Numeric data unavailable')
+
+    clamped_value = sorted((0, value, 126))[1]
+    note = int(clamped_value)
+
+    return MidiMessage(channel=spec.channel, note=note, velocity=126)
+
 message_queue = []
 # rhcp = ['E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'D', 'D', 'D', 'D', 'E', 'D', 'D', 'D', 'D'] * 4
 # message_queue.extend([message_from_button_spec(BUTTON_LOOKUP.get(note)) for note in rhcp])
@@ -78,6 +93,14 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
             print_dbg('No spec for datapoint')
             return []
         messages.append(message_from_joystick_spec(spec, datapoint))
+    elif datapoint.stream in NUMERIC_STREAM_NAMES:
+        numeric_name = datapoint.stream
+        print_dbg(f' Looking up numeric w name: {numeric_name}')
+        spec = NUMERIC_LOOKUP.get(numeric_name)
+        if spec is None:
+            print_dbg('No spec for datapoint')
+            return []
+        messages.append(message_from_numeric_spec(spec, datapoint))
     else: 
         print_dbg('Unknown stream for datapoint')
     return messages

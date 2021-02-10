@@ -32,3 +32,16 @@ class JoystickSpec():
     def __init__(self, name: str, channel: int):
         self.name = name
         self.channel = 0x90 + channel
+
+class NumericSpec():
+    """ Defines a mapping between a formant numeric stream and midi output
+
+    Sliders and dials always output values from 0-127, with a center value of 63
+
+    Args:
+        name: Name of the numeric stream
+        channel: What channel to emit values on
+    """
+    def __init__(self, name: str, channel: int):
+        self.name = name
+        self.channel = 0x90 + channel
