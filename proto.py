@@ -25,14 +25,14 @@ def print_dbg(s: str) -> None:
 # TODO(etragas) Generalize to other synths besides Arturia
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
-if 'Arturia' in x:
+port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
+port = port[0]
+if 'Arturia' in port:
     from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
-elif 'POLY' in x:
+elif 'POLY' in port:
     from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
-arturia_port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
-assert(len(arturia_port) == 1)
-arturia_port = arturia_port[0]
-port_int = available_ports.index(arturia_port)
+assert(len(port) == 1)
+port_int = available_ports.index(port)
 midiout.open_port(port_int)
 print_dbg(midiout)
 
