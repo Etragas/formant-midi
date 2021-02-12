@@ -26,15 +26,15 @@ def print_dbg(s: str) -> None:
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
 port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
+assert(len(port) == 1)
 port = port[0]
+port_int = available_ports.index(port)
+midiout.open_port(port_int)
+print_dbg(midiout)
 if 'Arturia' in port:
     from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 elif 'POLY' in port:
     from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
-assert(len(port) == 1)
-port_int = available_ports.index(port)
-midiout.open_port(port_int)
-print_dbg(midiout)
 
 def assert_midi_channel(name: str, val: int) -> None:
     assert (val <= max_channel_val), (f'{name} with value {val} exceeds max_channel_val of {max_channel_val}')
