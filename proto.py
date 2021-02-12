@@ -23,7 +23,7 @@ def print_dbg(s: str) -> None:
         print(s)
 
 # TODO(etragas) Generalize to other synths besides Arturia
-if 'Artura' in x:
+if 'Arturia' in x:
     from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 elif 'POLY' in x:
     from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
