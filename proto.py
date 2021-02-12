@@ -23,6 +23,8 @@ def print_dbg(s: str) -> None:
         print(s)
 
 # TODO(etragas) Generalize to other synths besides Arturia
+midiout = rtmidi.MidiOut()
+available_ports = midiout.get_ports()
 if 'Arturia' in x:
     from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 elif 'POLY' in x:
@@ -128,8 +130,6 @@ print_dbg(STREAM_NAMES)
 fc_client = FC()
 fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
-midiout = rtmidi.MidiOut()
-available_ports = midiout.get_ports()
 
 
 #TODO(etragas) Start stop reset clock
