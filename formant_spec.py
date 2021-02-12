@@ -14,11 +14,12 @@ class ButtonSpec():
         note: The note to emit
         velocity: The velocity to emit
     """
-    def __init__(self, name: str, channel: int, note: int, velocity: int):
+    def __init__(self, name: str, channel: int, note: int, velocity: int, tempo: float = 0.1):
         self.name = name
         self.channel = 0x90 + channel - 1
         self.note = note
         self.velocity = velocity
+        self.tempo = tempo
 
 class JoystickSpec():
     """ Defines a mapping between a formant joystick and midi output

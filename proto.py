@@ -22,6 +22,18 @@ def print_dbg(s: str) -> None:
     if debug_logging:
         print(s)
 
+# TODO(etragas) Generalize to other synths besides Arturia
+if 'Artura' in x:
+    from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
+elif 'POLY' in x:
+    from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
+arturia_port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
+assert(len(arturia_port) == 1)
+arturia_port = arturia_port[0]
+port_int = available_ports.index(arturia_port)
+midiout.open_port(port_int)
+print_dbg(midiout)
+
 def assert_midi_channel(name: str, val: int) -> None:
     assert (val <= max_channel_val), (f'{name} with value {val} exceeds max_channel_val of {max_channel_val}')
 
@@ -40,7 +52,7 @@ class MidiMessage():
 
 
 def message_from_button_spec(spec: ButtonSpec) -> MidiMessage:
-    return MidiMessage(spec.channel, spec.note, spec.velocity)
+    return MidiMessage(spec.channel, spec.note, spec.velocity, spec.tempo)
 
 def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
     # TODO(etragas) What are the stick names?
@@ -119,13 +131,6 @@ fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
 
-# TODO(etragas) Generalize to other synths besides Arturia
-arturia_port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
-assert(len(arturia_port) == 1)
-arturia_port = arturia_port[0]
-port_int = available_ports.index(arturia_port)
-midiout.open_port(port_int)
-print_dbg(midiout)
 
 #TODO(etragas) Start stop reset clock
 with midiout:
