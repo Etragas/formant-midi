@@ -36,6 +36,16 @@ if 'Arturia' in port:
     from arturia_config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 elif 'POLY' in port:
     from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
+tracker_port = [x for x in available_ports if 'Tracker' in x]
+if 'Tracker' in available_ports:
+    print_dbg('Tracker acquired')
+    tracker_midiout = rtmidi.MidiOut()
+    tracker_port_id = available_ports.index('Tracker:Tracker MIDI 1 28:0')
+    tracker_midiout.open_port(tracker_port_id)
+    with tracker_midiout:
+        SONG_START = 0xFA
+        tracker_midiout.send_message(SONG_START)
+        exit()
 
 def assert_midi_channel(name: str, val: int) -> None:
     assert (val <= max_channel_val), (f'{name} with value {val} exceeds max_channel_val of {max_channel_val}')
