@@ -18,12 +18,17 @@ JOYSTICK_SPEC = [
 
 NUMERIC_SPEC = [
     NumericSpec(name='echo', channel = 3),
-    NumericSpec(name='filter', channel = 4)
+    NumericSpec(name='filter', channel = 4),
+    NumericSpec(name='Octave', channel = 5),
+    NumericSpec(name='Legato', channel = 6),
+    NumericSpec(name='war-peace', channel = 7),
+    NumericSpec(name='deep-crispy', channel = 8)
 ]
 
 BUTTON_STREAM_NAMES = ['Buttons']
 JOYSTICK_STREAM_NAMES = ['joystick_a']
-NUMERIC_STREAM_NAMES = ['echo', 'filter']
+NUMERIC_STREAM_NAMES = ['echo', 'filter', 'Octave', 'Legato', 'war-peace', 'deep-crispy']
+
 
 BUTTON_LOOKUP = {v.name: v for v in BUTTON_SPEC}
 JOYSTICK_LOOKUP = {v.name: v for v in JOYSTICK_SPEC}
