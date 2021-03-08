@@ -15,7 +15,7 @@ debug_logging = True
 message_polling_rate = .01 # How often we check for a message from formant api
 last_clock_tick_time = time.time()
 bpm = 128
-clock_time_gap = 60 / bpm / 24
+clock_time_gap = 60 / bpm / 24 
 # This queue stores every teleop command received from the formant client
 # Each time a command is received, it is pushed on to the command queue
 # The midi control loop will then consume these commands and send them to the synth
@@ -160,6 +160,7 @@ with tracker_midiout:
             if elapsed > clock_time_gap:
                 SONG_CLOCK = 0xF8
                 tracker_midiout.send_message([SONG_CLOCK])
+                last_clock_tick_time = curtime
 
             if message_queue:
                 message = message_queue.pop(0)
