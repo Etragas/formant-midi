@@ -25,6 +25,7 @@ def print_dbg(s: str) -> None:
 # TODO(etragas) Generalize to other synths besides Arturia
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
+print_dbg('These are your ports ', available_ports)
 port = [x for x in available_ports if 'Arturia' in x or 'POLY' in x]
 assert(len(port) == 1)
 port = port[0]
