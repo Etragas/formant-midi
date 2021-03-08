@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 import time
 import rtmidi
@@ -14,7 +14,7 @@ max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 debug_logging = True
 message_polling_rate = .01 # How often we check for a message from formant api
 last_clock_tick_time = time.time()
-bpm = 128
+bpm = 124
 clock_time_gap = 60 / bpm / 24 
 # This queue stores every teleop command received from the formant client
 # Each time a command is received, it is pushed on to the command queue
@@ -44,11 +44,6 @@ if 'Tracker:Tracker MIDI 1 28:0' in available_ports:
     tracker_midiout = rtmidi.MidiOut()
     tracker_port_id = available_ports.index('Tracker:Tracker MIDI 1 28:0')
     tracker_midiout.open_port(tracker_port_id)
-    with tracker_midiout:
-        SONG_STOP = 0xFC
-        tracker_midiout.send_message([SONG_STOP])
-        SONG_START = 0xFA
-        tracker_midiout.send_message([SONG_START])
 
 
 def assert_midi_channel(name: str, val: int) -> None:
@@ -67,8 +62,17 @@ class MidiMessage():
         self.velocity = velocity
         self.tempo = tempo
 
+class RealTimeMessage():
+    def __init__(self, value):
+        self.value = value
 
-def message_from_button_spec(spec: ButtonSpec) -> MidiMessage:
+
+def message_from_button_spec(spec: ButtonSpec) -> Union[MidiMessage. RealTimeMessage]:
+    if spec.name == 'START':
+        retrun RealTimeMessage(0xFA)
+    if spec.name == 'STOP':
+        retrun RealTimeMessage(0xFC)
+
     return MidiMessage(spec.channel, spec.note, spec.velocity, spec.tempo)
 
 def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
@@ -146,9 +150,12 @@ fc_client = FC()
 fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
 
-
 #TODO(etragas) Start stop reset clock
 with tracker_midiout:
+    SONG_STOP = 0xFC
+    tracker_midiout.send_message([SONG_STOP])
+    SONG_START = 0xFA
+    tracker_midiout.send_message([SONG_START])
     with midiout:
         # Set all note volumes to 0
         for key_val in range(128):
@@ -156,14 +163,17 @@ with tracker_midiout:
             midiout.send_message(off)
         while 1:
             curtime = time.time()
-            elapsed = last_clock_tick_time - curtime
+            elapsed = curtime - last_clock_tick_time
             if elapsed > clock_time_gap:
+                print_dbg("sending clock")
                 SONG_CLOCK = 0xF8
                 tracker_midiout.send_message([SONG_CLOCK])
                 last_clock_tick_time = curtime
 
             if message_queue:
                 message = message_queue.pop(0)
+                if isinstance(message, RealTimeMessage):
+                    tracker_midiout.send_message([message.value])
                 # TODO(etragas) Instead of sleeping and sending note_off, can we send a note with time in it?
                 note_on = [message.channel, message.note, message.velocity] # channel 1, middle C, velocity 112
                 print_dbg(note_on)

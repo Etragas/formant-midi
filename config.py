@@ -1,6 +1,8 @@
 from formant_spec import ButtonSpec, JoystickSpec, NumericSpec
 
 BUTTON_SPEC = [
+    ButtonSpec(name='START', channel=0, note=0, velocity=0),
+    ButtonSpec(name='STOP', channel=0, note=0, velocity=0),
     ButtonSpec(name='A', channel=1, note=57, velocity=127),
     ButtonSpec(name='B', channel=1, note=59, velocity=127),
     ButtonSpec(name='C', channel=1, note=60, velocity=127),
