@@ -13,7 +13,9 @@ max_channel_val = 0x90 + 15 # Chanenls range from 0-15
 max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 debug_logging = True
 message_polling_rate = .01 # How often we check for a message from formant api
-
+last_clock_tick_time = time.time()
+bpm = 128
+clock_time_gap = 60 / bpm / 24
 # This queue stores every teleop command received from the formant client
 # Each time a command is received, it is pushed on to the command queue
 # The midi control loop will then consume these commands and send them to the synth
@@ -37,15 +39,17 @@ if 'Arturia' in port:
 elif 'POLY' in port:
     from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
 tracker_port = [x for x in available_ports if 'Tracker' in x]
-if 'Tracker' in available_ports:
+if 'Tracker:Tracker MIDI 1 28:0' in available_ports:
     print_dbg('Tracker acquired')
     tracker_midiout = rtmidi.MidiOut()
     tracker_port_id = available_ports.index('Tracker:Tracker MIDI 1 28:0')
     tracker_midiout.open_port(tracker_port_id)
     with tracker_midiout:
+        SONG_STOP = 0xFC
+        tracker_midiout.send_message([SONG_STOP])
         SONG_START = 0xFA
-        tracker_midiout.send_message(SONG_START)
-        exit()
+        tracker_midiout.send_message([SONG_START])
+
 
 def assert_midi_channel(name: str, val: int) -> None:
     assert (val <= max_channel_val), (f'{name} with value {val} exceeds max_channel_val of {max_channel_val}')
@@ -144,24 +148,31 @@ fc_client.register_teleop_callback(teleop_callback, STREAM_NAMES)
 
 
 #TODO(etragas) Start stop reset clock
-with midiout:
-    # Set all note volumes to 0
-    for key_val in range(128):
-        off = [144, key_val, 0]
-        midiout.send_message(off)
-    while 1:
-        if message_queue:
-            message = message_queue.pop(0)
-            # TODO(etragas) Instead of sleeping and sending note_off, can we send a note with time in it?
-            note_on = [message.channel, message.note, message.velocity] # channel 1, middle C, velocity 112
-            print_dbg(note_on)
-            midiout.send_message(note_on)
-            time.sleep(message.tempo)
-            note_off = [message.channel, message.note, 0]
-            midiout.send_message(note_off)
-            time.sleep(message_polling_rate)
+with tracker_midiout:
+    with midiout:
+        # Set all note volumes to 0
+        for key_val in range(128):
+            off = [144, key_val, 0]
+            midiout.send_message(off)
+        while 1:
+            curtime = time.time()
+            elapsed = last_clock_tick_time - curtime
+            if elapsed > clock_time_gap:
+                SONG_CLOCK = 0xF8
+                tracker_midiout.send_message([SONG_CLOCK])
 
-    for key_val in range(128):
-        off = [144, key_val, 0]
-        midiout.send_message(off)
+            if message_queue:
+                message = message_queue.pop(0)
+                # TODO(etragas) Instead of sleeping and sending note_off, can we send a note with time in it?
+                note_on = [message.channel, message.note, message.velocity] # channel 1, middle C, velocity 112
+                print_dbg(note_on)
+                midiout.send_message(note_on)
+                time.sleep(message.tempo)
+                note_off = [message.channel, message.note, 0]
+                midiout.send_message(note_off)
+                time.sleep(message_polling_rate)
+
+        for key_val in range(128):
+            off = [144, key_val, 0]
+            midiout.send_message(off)
 
