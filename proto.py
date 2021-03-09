@@ -12,7 +12,7 @@ max_channel_val = 0x90# Chanenls range from 0-15
 max_channel_val = 0x90 + 15 # Chanenls range from 0-15
 max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 debug_logging = True
-message_polling_rate = .01 # How often we check for a message from formant api
+message_polling_rate = .001 # How often we check for a message from formant api
 last_clock_tick_time = time.time()
 bpm = 124
 clock_time_gap = 60 / bpm / 24 
@@ -53,7 +53,7 @@ def assert_midi_val(name: str, val: int) -> None:
     assert (val <= max_midi_val), (f'{name} with value {val} exceeds max_midi_val of {max_midi_val}')
 
 class MidiMessage():
-    def __init__(self, channel: int, note: int, velocity: int, tempo: float = 0.01):
+    def __init__(self, channel: int, note: int, velocity: int, tempo: float = 0.001):
         assert_midi_channel('channel', channel)
         assert_midi_val('note', note)
         assert_midi_val('velocity', velocity)
@@ -67,11 +67,11 @@ class RealTimeMessage():
         self.value = value
 
 
-def message_from_button_spec(spec: ButtonSpec) -> Union[MidiMessage. RealTimeMessage]:
-    if spec.name == 'START':
-        retrun RealTimeMessage(0xFA)
+def message_from_button_spec(spec: ButtonSpec) -> Union[MidiMessage, RealTimeMessage]:
+    if spec.name == 'RUN':
+        return RealTimeMessage(0xFA)
     if spec.name == 'STOP':
-        retrun RealTimeMessage(0xFC)
+        return RealTimeMessage(0xFC)
 
     return MidiMessage(spec.channel, spec.note, spec.velocity, spec.tempo)
 
@@ -89,7 +89,7 @@ def message_from_joystick_spec(spec: JoystickSpec, datapoint) -> MidiMessage:
 def message_from_numeric_spec(spec: NumericSpec, datapoint) -> MidiMessage:
     value = 0
 
-    print(datapoint)
+    print_dbg(datapoint)
     # hey, mike here.
     # this value should hopefully appear when the agent is updated to 1.21
     try:
@@ -165,19 +165,25 @@ with tracker_midiout:
             curtime = time.time()
             elapsed = curtime - last_clock_tick_time
             if elapsed > clock_time_gap:
-                print_dbg("sending clock")
+                #print_dbg("sending clock")
                 SONG_CLOCK = 0xF8
                 tracker_midiout.send_message([SONG_CLOCK])
                 last_clock_tick_time = curtime
 
             if message_queue:
+                num_messages = len(message_queue)
+                print_dbg(f'Message backlog has {num_messages} messages')
+                if num_messages > 1:
+                    print_dbg(f'Message backlog has {num_messages} messages')
                 message = message_queue.pop(0)
-                if isinstance(message, RealTimeMessage):
+                if isinstance(message, RealTimeMessage): # TODO(Make better abstractions)
                     tracker_midiout.send_message([message.value])
+                    continue
                 # TODO(etragas) Instead of sleeping and sending note_off, can we send a note with time in it?
                 note_on = [message.channel, message.note, message.velocity] # channel 1, middle C, velocity 112
                 print_dbg(note_on)
                 midiout.send_message(note_on)
+                print_dbg(f'Sleeping for {message.tempo}')
                 time.sleep(message.tempo)
                 note_off = [message.channel, message.note, 0]
                 midiout.send_message(note_off)

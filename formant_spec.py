@@ -14,7 +14,7 @@ class ButtonSpec():
         note: The note to emit
         velocity: The velocity to emit
     """
-    def __init__(self, name: str, channel: int, note: int, velocity: int, tempo: float = 0.1):
+    def __init__(self, name: str, channel: int, note: int, velocity: int, tempo: float = 0.001):
         self.name = name
         self.channel = 0x90 + channel - 1
         self.note = note
