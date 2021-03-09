@@ -112,6 +112,14 @@ def midi_messages_from_formant(datapoint) -> List[MidiMessage]: # TODO(etragas) 
     messages = []
     print_dbg('--- Parsing datapoint ---')
     print_dbg(datapoint)
+
+    print_dbg(datapoint)
+    if datapoint.stream == "bpm":
+        global bpm
+        global clock_time_gap
+        bpm = datapoint.numeric.value
+        clock_time_gap = 60 / bpm / 24 
+        return []
     if datapoint.stream in BUTTON_STREAM_NAMES:
         for bit in datapoint.bitset.bits:
             spec = BUTTON_LOOKUP.get(bit.key)
