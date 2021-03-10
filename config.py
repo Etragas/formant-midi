@@ -1,4 +1,4 @@
-from formant_spec import ButtonSpec, JoystickSpec, NumericSpec
+from formant_spec import ButtonSpec, JoystickSpec, NumericNoteSpec, NumericVelocitySpec 
 
 BUTTON_SPEC = [
     ButtonSpec(name='RUN', channel=0, note=0, velocity=0),
@@ -19,13 +19,14 @@ JOYSTICK_SPEC = [
 
 
 NUMERIC_SPEC = [
-    NumericSpec(name='bpm', channel = 0),
-    NumericSpec(name='echo', channel = 3),
-    NumericSpec(name='filter', channel = 4),
-    NumericSpec(name='Octave', channel = 5),
-    NumericSpec(name='Legato', channel = 6),
-    NumericSpec(name='war-peace', channel = 7),
-    NumericSpec(name='deep-crispy', channel = 8)
+    NumericNoteSpec(name='bpm', channel = 0),
+    NumericNoteSpec(name='echo', channel = 3),
+    NumericNoteSpec(name='filter', channel = 4),
+    NumericNoteSpec(name='Octave', channel = 5),
+    NumericNoteSpec(name='Legato', channel = 6),
+    NumericNoteSpec(name='war-peace', channel = 7),
+    NumericNoteSpec(name='deep-crispy', channel = 8),
+    NumericVelocitySpec(name='deep-crispy-vel', channel = 8),
 ]
 
 BUTTON_STREAM_NAMES = ['Buttons']

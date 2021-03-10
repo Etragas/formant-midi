@@ -46,3 +46,8 @@ class NumericSpec():
     def __init__(self, name: str, channel: int):
         self.name = name
         self.channel = 0x90 + channel - 1
+
+class NumericNoteSpec(NumericSpec):
+    pass
+class NumericVelocitySpec(NumericSpec):
+    pass

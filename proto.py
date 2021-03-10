@@ -4,9 +4,9 @@ import time
 import rtmidi
 import mido
 from formant.sdk.agent.v1 import Client as FC
-from formant_spec import  ButtonSpec, JoystickSpec, NumericSpec
+from formant_spec import  ButtonSpec, JoystickSpec, NumericSpec, NumericNoteSpec, NumericVelocitySpec
 from config import BUTTON_LOOKUP, JOYSTICK_LOOKUP, NUMERIC_LOOKUP, STREAM_NAMES, BUTTON_STREAM_NAMES, JOYSTICK_STREAM_NAMES, NUMERIC_STREAM_NAMES
-
+from collections import defaultdict
 # Constants
 max_channel_val = 0x90# Chanenls range from 0-15
 max_channel_val = 0x90 + 15 # Chanenls range from 0-15
@@ -14,7 +14,7 @@ max_midi_val = 0b01111111 # 127, midi reserves leading 1 in all bytes
 debug_logging = True
 message_polling_rate = .001 # How often we check for a message from formant api
 last_clock_tick_time = time.time()
-bpm = 124
+bpm = 62
 clock_time_gap = 60 / bpm / 24 
 # This queue stores every teleop command received from the formant client
 # Each time a command is received, it is pushed on to the command queue
@@ -23,6 +23,10 @@ clock_time_gap = 60 / bpm / 24
 def print_dbg(s: str) -> None:
     if debug_logging:
         print(s)
+
+# Stores last sent values for each channel, should be map from channel -> int
+numeric_note_cache = defaultdict(lambda: 126)
+numeric_velocity_cache = defaultdict(lambda: 126)
 
 # TODO(etragas) Generalize to other synths besides Arturia
 midiout = rtmidi.MidiOut()
@@ -98,9 +102,18 @@ def message_from_numeric_spec(spec: NumericSpec, datapoint) -> MidiMessage:
         print_dbg('Numeric data unavailable')
 
     clamped_value = sorted((0, value, 126))[1]
-    note = int(clamped_value)
+    if isinstance(spec, NumericNoteSpec):
+        note = int(clamped_value)
+        numeric_note_cache[spec.channel] = note
+        velocity = numeric_velocity_cache[spec.channel]
+    elif isinstance(spec, NumericVelocitySpec):
+        note = numeric_note_cache[spec.channel]
+        velocity = int(clamped_value)
+        numeric_velocity_cache[spec.channel] = velocity
+    else:
+        raise ValueError('Undentified Spec')
 
-    return MidiMessage(channel=spec.channel, note=note, velocity=126)
+    return MidiMessage(channel=spec.channel, note=note, velocity=velocity)
 
 message_queue = []
 # rhcp = ['E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'E', 'E', 'D', 'E', 'D', 'D', 'D', 'D', 'E', 'D', 'D', 'D', 'D'] * 4
@@ -180,7 +193,6 @@ with tracker_midiout:
 
             if message_queue:
                 num_messages = len(message_queue)
-                print_dbg(f'Message backlog has {num_messages} messages')
                 if num_messages > 1:
                     print_dbg(f'Message backlog has {num_messages} messages')
                 message = message_queue.pop(0)
